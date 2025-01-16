@@ -15,7 +15,14 @@ async function enviarPergunta() {
 
     adicionarMensagem(userInput, 'user'); // Adiciona a mensagem do usuário
 
+    // Mensagem "digitando" enquanto espera a resposta
+    adicionarMensagem("Procurando a melhor resposta para você...", 'bot', true);
+
     const resposta = await obterRespostaCohere(userInput);
+
+    // Remove a mensagem "digitando"
+    const mensagens = document.querySelectorAll('.message.bot-message');
+    mensagens[mensagens.length - 1].remove();
 
     adicionarMensagem(resposta, 'bot'); // Adiciona a resposta do bot
 
@@ -23,10 +30,15 @@ async function enviarPergunta() {
     textarea.style.height = 'auto'; // Reseta a altura do textarea
 }
 
-function adicionarMensagem(texto, tipo) {
+function adicionarMensagem(texto, tipo, isTyping = false) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', tipo === 'user' ? 'user-message' : 'bot-message');
-    messageDiv.textContent = texto;
+    
+    if (isTyping) {
+        messageDiv.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${texto}`;
+    } else {
+        messageDiv.textContent = texto;
+    }
 
     const messagesContainer = document.getElementById('messages');
     messagesContainer.appendChild(messageDiv);
